@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<link type="text/css" rel="stylesheet" href="{% static 'css/materialize.min.css' %}" media="screen,projection"/>
+    <link type="text/css" rel="stylesheet" href="{% static 'css/login.css' %}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<title>登录</title>
+</head>
+<body>
+	<script type="text/javascript" src="{% static 'js/jquery-3.2.1.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/materialize.min.js' %}"></script>
+    
+    <div class="row">
+    	<div class="col l5 s2"></div>
+    	<div id="content" class="col l2 s8 card-panel z-depth-3 grey lighten-4">
+		    <form action="{% url 'login:do_login' %}" method="post">
+				{% csrf_token %}
+		    	<div class="row">
+		    		<h5 class="col l12 s12 center-align">欢迎使用系统</h5>
+		    	</div>
+		    	<div class="row">
+		    		<div class="col l12 s12 input-field">
+		    			<input type="text" placeholder="请输入用户名" id="username"
+		    				name="username" autocomplete="off">
+		    			<label for="username">用户名：</label>
+		    		</div>
+		    		<label id="username_error" class="col s12 error" hidden="hidden">用户名不能为空</label>
+		    	</div>
+	    		<div class="row">
+		    		<div class="col l12 s12 input-field">
+		    			<input type="password" placeholder="请输入密码" id="password"
+		    				name="password" autocomplete="off">
+		    			<label for="password">密码：</label>
+		    		</div>
+		    		<label id="password_error" class="col l12 s12 error" hidden="hidden">密码不能为空</label>
+		    		<div class="col l12 s12 right-align">
+		    			<a href="regist">注册</a>
+		    			<a href="forget_password">忘记密码</a>
+		    		</div>
+		    	</div>
+		   	</form>
+            {% if login_error %}
+            <div class="row">
+		   		<label class="col l12 s12 center-align error">{{ login_error }}</label>
+		   	</div>
+            {% endif %}
+		   	<div class="row">
+	    		<button type="button" onclick="submit()" class="col l12 s12 waves-effect waves-light btn">登录</button>
+	    	</div>
+	   	</div>
+	   	<div class="col l5 s2"></div>
+    </div>
+    
+    <script type="text/javascript">
+    	function submit() {
+    		var isError = false;
+    		
+    		var username = $("#username").val();
+    		if (username == null || username == "") {
+    			$("#username_error").show();
+    			isError = true;
+    		} else {
+    			$("#username_error").hide();
+    		}
+    		
+    		var password = $("#password").val();
+			if (password == null || password == "") {
+				$("#password_error").show();
+    			isError = true;
+    		} else {
+    			$("#password_error").hide();
+    		}
+    		
+    		if (!isError) {
+    			$("form").submit();
+    		}
+		}
+    </script>
+</body>
+</html>
