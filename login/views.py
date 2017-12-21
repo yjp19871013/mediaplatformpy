@@ -43,7 +43,6 @@ def register(request):
     if form.is_valid():
         return render(reverse('login:do_login'))
     else:
-        print(form.errors)
         return render(request, 'register.html', {'errors': form.errors})
 
 
