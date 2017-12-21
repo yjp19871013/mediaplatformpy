@@ -36,8 +36,8 @@
 		    		</div>
 		    		<label id="password_error" class="col l12 s12 error" hidden="hidden">密码不能为空</label>
 		    		<div class="col l12 s12 right-align">
-		    			<a href="regist">注册</a>
-		    			<a href="forget_password">忘记密码</a>
+		    			<a href="{% url 'login:register' %}">注册</a>
+		    			<a href="{% url 'login:forget_password' %}">忘记密码</a>
 		    		</div>
 		    	</div>
 		   	</form>
