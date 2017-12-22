@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.db import models
 from django.shortcuts import render, redirect, reverse
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.cache import never_cache
@@ -6,7 +7,7 @@ from django.views.decorators.http import require_http_methods, require_POST
 
 from common.common_tools import generate_validation_code
 from common.email_tools import send_validate_email_async
-from login.forms import ForgetPasswordForm, RegisterForm
+from login.forms import ForgetPasswordForm, RegisterForm, ChangePasswordForm
 from login.models import ValidationInfo
 
 
@@ -73,6 +74,24 @@ def forget_password(request):
 @never_cache
 @require_POST
 def change_password(request):
-    pass
+    username = request.POST.get('username', '')
+    if len(username) == 0:
+        return redirect(reverse('login:forget_password'))
 
-
+    form = ChangePasswordForm(request.POST)
+    if form.is_valid():
+        users = User.objects.get(username=username)
+        validation_code = form.cleaned_data['validation_code']
+        try:
+            info = ValidationInfo.objects.get(user_id=users.id, validation_code=validation_code)
+            info.delete()
+        except models.DoesNotExist:
+            return render(request, 'change_password.html',
+                          {'form': form,
+                           'username': username},
+                          'change_error', '验证码错误，请重新尝试')
+        return redirect(reverse('login:do_login'))
+    else:
+        return render(request, 'change_password.html',
+                      {'form': form,
+                       'username': username})

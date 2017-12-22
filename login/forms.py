@@ -69,4 +69,5 @@ class ForgetPasswordForm(forms.Form):
 
 
 class ChangePasswordForm(MakeSurePasswordForm):
-    username = CharField(required=True, error_messages={'required': '用户名不能为空'})
+    validation_code = CharField(required=True, error_messages={'required': '验证码不能为空'})
+
