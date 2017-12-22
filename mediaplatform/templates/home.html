@@ -5,6 +5,11 @@
     <title>主页</title>
 <body>
     欢迎，{{ username }}
-    <a href="{% url 'login:do_logout' %}">注销</a>
+    <form action="{% url 'login:do_logout' %}" method="post">
+        {% csrf_token %}
+        <input type="text" name="username" value="{{ username }}" hidden>
+        <input type="submit" value="注销">
+    </form>
+
 </body>
 </html>
