@@ -20,4 +20,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('mediaplatform/', include('mediaplatform.urls')),
     path('mediaplatform_login/', include('login.urls')),
+    path('api-auth/', include('rest_framework.urls')),
 ]
