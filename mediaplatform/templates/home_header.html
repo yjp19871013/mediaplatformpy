@@ -1,0 +1,16 @@
+<header>
+    <nav>
+        <div class="nav-wrapper teal lighten-2">
+            <ul class="right hide-on-med-and-down">
+                <li><a href="{% url 'mediaplatform:user_info' %}">用户信息</a></li>
+                <li>
+                    <form name="logout" method="post" action="{% url 'login:do_logout' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="username" value="">
+                        <a href="javascript:document.logout.submit()">注销</a>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</header>

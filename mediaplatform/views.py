@@ -9,5 +9,12 @@ from django.views.decorators.http import require_GET
 @require_GET
 def home(request):
     return render(request,
-                  'home.html',
-                  {'username': request.user.username})
+                  'user_info.html')
+
+
+@never_cache
+@login_required(login_url='/mediaplatform_login/do_login')
+@require_GET
+def user_info(request):
+    return render(request,
+                  'user_info.html')

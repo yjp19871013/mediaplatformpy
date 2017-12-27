@@ -1,0 +1,70 @@
+{% extends 'home_base.html' %}
+
+{% block main %}
+<main>
+    <div class="row">
+        <ul class="col l10 push-l1 collapsible popout" data-collapsible="accordion">
+            <li>
+                <div class="collapsible-header active">
+                    <i class="material-icons">list</i>
+                    账号信息
+                </div>
+                <div class="collapsible-body">
+                    <div class="row">
+                        <div class="col l3">用户名：</div>
+                        <div class="col l3">yjp</div>
+                        <div class="col l3">邮箱：</div>
+                        <div class="col l3">yjp19871013@126.com</div>
+                    </div>
+                </div>
+            </li>
+            <li>
+                <div class="collapsible-header">
+                    <i class="material-icons">list</i>
+                    号码信息
+                </div>
+                <div class="collapsible-body">
+                    <div class="row">
+                        <div class="col l2">绑定号码数：</div>
+                        <div class="col l2">2</div>
+                        <div class="col l2">录音总时长(小时)：</div>
+                        <div class="col l2">500</div>
+                        <div class="col l4 right-align">
+                            <button class="waves-effect waves-light btn">删除全部</button>
+                            <button class="waves-effect waves-light btn">添加新号码</button>
+                        </div>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>序号</th>
+                                <th>电话号码</th>
+                                <th>录音文件数</th>
+                                <th>录音总时长(小时)</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>XXXXXXXXXXXXXXXX</td>
+                                <td>100</td>
+                                <td>0.5</td>
+                                <td><a href="#">删除</a></td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>XXXXXXXXXXXXXXXX</td>
+                                <td>200</td>
+                                <td>20</td>
+                                <td><a href="#">删除</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </li>
+        </ul>
+    </div>
+</main>
+{% endblock %}
