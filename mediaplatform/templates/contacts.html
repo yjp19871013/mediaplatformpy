@@ -1,0 +1,35 @@
+{% extends 'home_base.html' %}
+
+{% block main %}
+<main>
+    <div class="row">
+        <div class="col l3 s1"></div>
+        <form method="get" action="#">
+            <div class="input-field col l6 s10">
+                <input id="search" type="search" class="center-align" placeholder="请输入要查找的人名">
+                <label class="label-icon" for="search"><i class="material-icons">search</i></label>
+            </div>
+        </form>
+        <div class="col l3 s1"></div>
+    </div>
+
+    <div class="row">
+        <div class="col l2 s1"></div>
+        <ul class="col l8 s10 collapsible popout" data-collapsible="accordion" style="overflow:auto;height:500px">
+            <li>
+                <div class="collapsible-header">
+                    <i class="material-icons">list</i>
+                    张三
+                </div>
+                <div class="collapsible-body">
+                    <div class="row">
+                        <div class="col l3 s4">手机号码：</div>
+                        <div class="col l3 s8">XXXXXXXXXXXXXX</div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+        <div class="col l2 s1"></div>
+    </div>
+</main>
+{% endblock %}

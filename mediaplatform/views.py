@@ -9,13 +9,20 @@ from django.views.decorators.http import require_GET
 @require_GET
 def home(request):
     return render(request,
-                  'user_info.html')
+                  'contacts.html')
+
+
+@never_cache
+@login_required(login_url='/mediaplatform_login/do_login')
+@require_GET
+def contacts(request):
+    return render(request,
+                  'contacts.html')
 
 
 @never_cache
 @login_required(login_url='/mediaplatform_login/do_login')
 @require_GET
 def user_info(request):
-
     return render(request,
                   'user_info.html')
