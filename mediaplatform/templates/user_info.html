@@ -3,7 +3,8 @@
 {% block main %}
 <main>
     <div class="row">
-        <ul class="col l10 push-l1 collapsible popout" data-collapsible="accordion">
+        <div class="col l1 s1"></div>
+        <ul class="col l10 s10 collapsible popout" data-collapsible="accordion">
             <li>
                 <div class="collapsible-header active">
                     <i class="material-icons">list</i>
@@ -11,14 +12,15 @@
                 </div>
                 <div class="collapsible-body">
                     <div class="row">
-                        <div class="col l3">用户名：</div>
-                        <div class="col l3">{{ request.user.username }}</div>
-                        <div class="col l3">邮箱：</div>
-                        <div class="col l3">{{ request.user.email }}</div>
+                        <div class="col l3 s4">用户名：</div>
+                        <div class="col l3 s8">{{ request.user.username }}</div>
+                        <div class="col l3 s4">邮箱：</div>
+                        <div class="col l3 s8">{{ request.user.email }}</div>
                     </div>
                 </div>
             </li>
         </ul>
+        <div class="col l1 s1"></div>
     </div>
 </main>
 {% endblock %}
