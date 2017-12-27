@@ -16,5 +16,6 @@ def home(request):
 @login_required(login_url='/mediaplatform_login/do_login')
 @require_GET
 def user_info(request):
+
     return render(request,
                   'user_info.html')
