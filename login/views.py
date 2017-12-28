@@ -1,9 +1,16 @@
+import json
+
 from django.contrib.auth.models import User
 from django.db import models
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect, reverse
 from django.contrib.auth import authenticate, login, logout
+from django.utils.six import BytesIO
 from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods, require_POST
+from rest_framework import status
+from rest_framework.parsers import JSONParser
 
 from common.common_tools import generate_validation_code
 from common.email_tools import send_validate_email_async
@@ -95,3 +102,46 @@ def change_password(request):
         return render(request, 'change_password.html',
                       {'form': form,
                        'username': username})
+
+
+@csrf_exempt
+@require_POST
+def api_login(request):
+    data = JSONParser().parse(request)
+    username = data.get('username', '')
+    password = data.get('password', '')
+    user = authenticate(request, username=username, password=password)
+    if user is not None:
+        login(request, user)
+
+        ret_dict = {'id': user.id, 'username': user.username}
+        return HttpResponse(json.dumps(ret_dict), content_type="application/json")
+    else:
+        ret_dict = {'error': '用户名或密码错误'}
+        return HttpResponse(json.dumps(ret_dict), content_type="application/json")
+
+
+@csrf_exempt
+@require_POST
+def api_logout(request):
+    data = JSONParser().parse(request)
+    user_id = data.get('id', '')
+    username = data.get('username', '')
+    if user_id == '' or username == '':
+        ret_dict = {'error': 'id或username不能为空'}
+        return HttpResponse(json.dumps(ret_dict), content_type="application/json")
+
+    user = User.objects.get(pk=user_id)
+    if user is None:
+        ret_dict = {'error': '无此用户'}
+        return HttpResponse(json.dumps(ret_dict), content_type="application/json")
+    else:
+        if user.username != username:
+            ret_dict = {'error': '用户名不匹配'}
+            return HttpResponse(json.dumps(ret_dict), content_type="application/json")
+        else:
+            request.user = user
+            logout(request)
+
+            ret_dict = {'id': user.id, 'username': user.username}
+            return HttpResponse(json.dumps(ret_dict), content_type="application/json")
