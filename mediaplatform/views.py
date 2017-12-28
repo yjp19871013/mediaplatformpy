@@ -35,7 +35,7 @@ def user_info(request):
 
 
 @api_view(['GET'])
-def contacts_user_details(request, user_id):
+def api_contacts_user_details(request, user_id):
     contacts = Contacts.objects.filter(user_id=user_id)
     if contacts.count() == 0:
         return Response(status=status.HTTP_404_NOT_FOUND)
@@ -45,7 +45,7 @@ def contacts_user_details(request, user_id):
 
 
 @api_view(['POST'])
-def contacts_update(request):
+def api_contacts_update(request):
     serializer = ContactsSerializer(data=request.data, many=True)
     if serializer.is_valid():
         serializer.save()
