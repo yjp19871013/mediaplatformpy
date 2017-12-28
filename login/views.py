@@ -2,14 +2,12 @@ import json
 
 from django.contrib.auth.models import User
 from django.db import models
-from django.http import JsonResponse, HttpResponse
+from django.http import HttpResponse
 from django.shortcuts import render, redirect, reverse
 from django.contrib.auth import authenticate, login, logout
-from django.utils.six import BytesIO
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods, require_POST
-from rest_framework import status
 from rest_framework.parsers import JSONParser
 
 from common.common_tools import generate_validation_code
