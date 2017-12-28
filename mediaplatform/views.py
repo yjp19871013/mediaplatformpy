@@ -35,11 +35,21 @@ def user_info(request):
 
 
 @api_view(['GET'])
-def contacts(request, user_id):
+def contacts_user_details(request, user_id):
     contacts = Contacts.objects.filter(user_id=user_id)
-    if contacts.count() != 1:
+    if contacts.count() == 0:
         return Response(status=status.HTTP_404_NOT_FOUND)
     else:
-        serializer = ContactsSerializer(contacts[0])
+        serializer = ContactsSerializer(contacts, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+def contacts_update(request):
+    serializer = ContactsSerializer(data=request.data, many=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    else:
+        return Response(serializer.errors)
 
