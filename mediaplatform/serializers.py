@@ -9,7 +9,6 @@ class ContactsSerializer(serializers.ModelSerializer):
     user_id = serializers.CharField(max_length=50, allow_null=False)
 
     def validate(self, attrs):
-        print(attrs)
         if 'user_id' in attrs:
             user_id = attrs['user_id']
             users = User.objects.filter(pk=user_id)
