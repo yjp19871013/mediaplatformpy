@@ -112,10 +112,10 @@ def api_login(request):
     if user is not None:
         login(request, user)
 
-        ret_dict = {'id': user.id, 'username': user.username}
+        ret_dict = {'id': user.id, 'username': user.username, 'error': ''}
         return HttpResponse(json.dumps(ret_dict), content_type="application/json")
     else:
-        ret_dict = {'error': '用户名或密码错误'}
+        ret_dict = {'id': '', 'username': '', 'error': '用户名或密码错误'}
         return HttpResponse(json.dumps(ret_dict), content_type="application/json")
 
 
@@ -126,20 +126,20 @@ def api_logout(request):
     user_id = data.get('id', '')
     username = data.get('username', '')
     if user_id == '' or username == '':
-        ret_dict = {'error': 'id或username不能为空'}
+        ret_dict = {'id': '', 'username': '', 'error': 'id或username不能为空'}
         return HttpResponse(json.dumps(ret_dict), content_type="application/json")
 
     user = User.objects.get(pk=user_id)
     if user is None:
-        ret_dict = {'error': '无此用户'}
+        ret_dict = {'id': '', 'username': '', 'error': '无此用户'}
         return HttpResponse(json.dumps(ret_dict), content_type="application/json")
     else:
         if user.username != username:
-            ret_dict = {'error': '用户名不匹配'}
+            ret_dict = {'id': '', 'username': '', 'error': '用户名不匹配'}
             return HttpResponse(json.dumps(ret_dict), content_type="application/json")
         else:
             request.user = user
             logout(request)
 
-            ret_dict = {'id': user.id, 'username': user.username}
+            ret_dict = {'id': user.id, 'username': user.username, 'error': ''}
             return HttpResponse(json.dumps(ret_dict), content_type="application/json")
