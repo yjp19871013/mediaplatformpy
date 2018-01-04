@@ -22,10 +22,27 @@ def home(request):
 @login_required(login_url='/mediaplatform_login/do_login')
 @require_GET
 def contacts(request):
-    contacts = Contacts.objects.all()
+    search_name = request.GET.get('search_name', '')
+
+    if len(search_name) == 0:
+        contacts_objects = Contacts.objects.all()
+    else:
+        contacts_objects = Contacts.objects.filter(name=search_name)
+
+    show_contacts = {}
+    for contact in contacts_objects:
+        name = contact.name
+        if name in show_contacts:
+            phone_numbers = show_contacts[name]
+            phone_numbers.append(contact.phone_number)
+            show_contacts[name] = phone_numbers
+        else:
+            show_contacts.setdefault(name, [contact.phone_number])
+
     return render(request,
                   'contacts.html',
-                  {'contacts': contacts})
+                  {'show_contacts': show_contacts,
+                   'search_name': search_name})
 
 
 @never_cache

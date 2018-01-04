@@ -4,28 +4,44 @@
 <main>
     <div class="row">
         <div class="col l3 s1"></div>
-        <form method="get" action="#">
+        <form method="get" action="{% url 'mediaplatform:contacts' %}">
             <div class="input-field col l6 s10">
-                <input id="search" type="search" class="center-align" placeholder="请输入要查找的人名">
+                <input id="search" type="search" class="center-align" name="search_name"
+                       placeholder="请输入要查找的人名" value="{{ search_name }}">
                 <label class="label-icon" for="search"><i class="material-icons">search</i></label>
             </div>
+            <div class="col l3 s1"></div>
         </form>
-        <div class="col l3 s1"></div>
     </div>
 
     <div class="row">
         <div class="col l2 s1"></div>
         <ul class="col l8 s10 collapsible popout" data-collapsible="accordion" style="overflow:auto;height:500px">
-            {% for contact in contacts %}
+            {% for name, phone_numbers in show_contacts.items %}
             <li>
                 <div class="collapsible-header">
                     <i class="material-icons">list</i>
-                    {{ contact.name }}
+                    {{ name }}
+                    <span class="badge">{{ phone_numbers|length }}</span>
                 </div>
                 <div class="collapsible-body">
                     <div class="row">
-                        <div class="col l3 s4">手机号码：</div>
-                        <div class="col l3 s8">{{ contact.phone_number }}</div>
+                        <div class="col l2 s3">号码:</div>
+                        <div class="col l10 s9">
+                            <ul>
+                                {% for phone_number in phone_numbers %}
+                                <li>
+                                    <div class="row">
+                                        <div class="col l6 s6">{{ phone_number }}</div>
+                                        <div class="col l6 s6 right-align">
+                                            <a href="#">修改</a>
+                                            <a href="#">删除</a>
+                                        </div>
+                                    </div>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </li>
