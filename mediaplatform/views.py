@@ -38,7 +38,7 @@ def user_info(request):
 def api_contacts_user_details(request, user_id):
     contacts = Contacts.objects.filter(user_id=user_id)
     if contacts.count() == 0:
-        ret_dict = {'data': '', 'error': '无此用户'}
+        ret_dict = {'data': [], 'error': ''}
         return HttpResponse(json.dumps(ret_dict), content_type="application/json")
     else:
         serializer = ContactsSerializer(contacts, many=True)
