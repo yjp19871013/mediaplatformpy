@@ -35,7 +35,7 @@
                                     <div class="row">
                                         <div class="col l6 s6">{{ phone_number }}</div>
                                         <div class="col l6 s6 right-align">
-                                            <a href="#">修改</a>
+                                            <a class="modal-trigger" href="#modify_phone_number_dialog">修改</a>
                                             <a href="#">删除</a>
                                         </div>
                                     </div>
@@ -53,5 +53,26 @@
         {% endif %}
         <div class="col l2 s1"></div>
     </div>
+
+    <!-- Modal Structure -->
+    <div id="modify_phone_number_dialog" class="modal">
+        <div class="modal-content">
+            <h4>修改号码</h4>
+            <input type="text" id="new_phone_number" placeholder="请输入新的号码"/>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-action waves-effect waves-light btn" onclick="onModifyPhoneNumber()">确定</button>
+            <button class="modal-action modal-close waves-effect waves-green btn">取消</button>
+        </div>
+    </div>
 </main>
+{% endblock %}
+
+{% block javascript_code %}
+    $(function(){
+        $('.modal').modal();
+    });
+
+    function onModifyPhoneNumber() {
+    }
 {% endblock %}
