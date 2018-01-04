@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_GET
 from rest_framework.decorators import api_view
@@ -14,16 +15,17 @@ from mediaplatform.serializers import ContactsSerializer
 @login_required(login_url='/mediaplatform_login/do_login')
 @require_GET
 def home(request):
-    return render(request,
-                  'contacts.html')
+    return redirect(reverse('mediaplatform:contacts'))
 
 
 @never_cache
 @login_required(login_url='/mediaplatform_login/do_login')
 @require_GET
 def contacts(request):
+    contacts = Contacts.objects.all()
     return render(request,
-                  'contacts.html')
+                  'contacts.html',
+                  {'contacts': contacts})
 
 
 @never_cache

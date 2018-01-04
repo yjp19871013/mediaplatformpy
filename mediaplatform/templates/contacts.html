@@ -16,18 +16,20 @@
     <div class="row">
         <div class="col l2 s1"></div>
         <ul class="col l8 s10 collapsible popout" data-collapsible="accordion" style="overflow:auto;height:500px">
+            {% for contact in contacts %}
             <li>
                 <div class="collapsible-header">
                     <i class="material-icons">list</i>
-                    张三
+                    {{ contact.name }}
                 </div>
                 <div class="collapsible-body">
                     <div class="row">
                         <div class="col l3 s4">手机号码：</div>
-                        <div class="col l3 s8">XXXXXXXXXXXXXX</div>
+                        <div class="col l3 s8">{{ contact.phone_number }}</div>
                     </div>
                 </div>
             </li>
+            {% endfor %}
         </ul>
         <div class="col l2 s1"></div>
     </div>

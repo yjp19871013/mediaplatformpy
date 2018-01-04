@@ -11,7 +11,6 @@ from django.views.decorators.http import require_http_methods, require_POST
 from rest_framework.parsers import JSONParser
 
 from common.common_tools import generate_validation_code
-from common.email_tools import send_validate_email_async
 from login.forms import ForgetPasswordForm, RegisterForm, ChangePasswordForm
 from login.models import ValidationInfo
 

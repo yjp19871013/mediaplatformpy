@@ -4,6 +4,7 @@ from . import views
 app_name = 'mediaplatform'
 urlpatterns = [
     path('', views.home, name='home'),
+    path('contacts', views.contacts, name='contacts'),
     path('user_info/', views.user_info, name='user_info'),
     path('api_contacts_update/', views.api_contacts_update, name='api_contacts_update'),
     re_path('api_contacts_user_details/(?P<user_id>[0-9]+)/',
