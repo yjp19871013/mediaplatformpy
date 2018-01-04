@@ -55,12 +55,12 @@ def user_info(request):
 
 @api_view(['GET'])
 def api_contacts_user_details(request, user_id):
-    contacts = Contacts.objects.filter(user_id=user_id)
-    if contacts.count() == 0:
+    contacts_objects = Contacts.objects.filter(user_id=user_id)
+    if contacts_objects.count() == 0:
         ret_dict = {'data': [], 'error': ''}
         return HttpResponse(json.dumps(ret_dict), content_type="application/json")
     else:
-        serializer = ContactsSerializer(contacts, many=True)
+        serializer = ContactsSerializer(contacts_objects, many=True)
         ret_dict = {'data': serializer.data, 'error': ''}
         return HttpResponse(json.dumps(ret_dict), content_type="application/json")
 
