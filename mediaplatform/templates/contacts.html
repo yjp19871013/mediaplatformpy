@@ -16,6 +16,7 @@
 
     <div class="row">
         <div class="col l2 s1"></div>
+        {% if show_contacts|length != 0 %}
         <ul class="col l8 s10 collapsible popout" data-collapsible="accordion" style="overflow:auto;height:500px">
             {% for name, phone_numbers in show_contacts.items %}
             <li>
@@ -47,6 +48,9 @@
             </li>
             {% endfor %}
         </ul>
+        {% else %}
+            <h3 class="col l8 s10 center-align">您还没有通信录数据，可以使用APP备份数据</h3>
+        {% endif %}
         <div class="col l2 s1"></div>
     </div>
 </main>
