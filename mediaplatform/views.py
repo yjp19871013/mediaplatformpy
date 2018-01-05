@@ -139,7 +139,8 @@ def api_contacts_user_details(request, user_id):
 def api_contacts_update(request):
     serializer = ContactsSerializer(data=request.data, many=True)
     if serializer.is_valid():
-        Contacts.objects.all().delete()
+        user_id = serializer.validated_data[0]['user_id']
+        Contacts.objects.filter(user_id=user_id).delete()
         serializer.save()
         ret_dict = {'error': ''}
         return HttpResponse(json.dumps(ret_dict), content_type="application/json")
@@ -152,10 +153,7 @@ def api_contacts_update(request):
 def api_contacts_operation(request, user_id):
     operations = ContactsOperation.objects.filter(user_id=user_id)
     serializer = ContactsOperationSerializer(operations, many=True)
-    if serializer.is_valid():
-        ret_dict = {'data': serializer.data, 'error': serializer.errors}
-        return HttpResponse(json.dumps(ret_dict), content_type="application/json")
-    else:
-        ret_dict = {'data': [], 'error': serializer.errors}
-        return HttpResponse(json.dumps(ret_dict), content_type="application/json")
+    ret_dict = {'data': serializer.data, 'error': ''}
+    operations.delete()
+    return HttpResponse(json.dumps(ret_dict), content_type="application/json")
 
