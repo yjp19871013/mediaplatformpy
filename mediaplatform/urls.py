@@ -11,8 +11,6 @@ urlpatterns = [
     path('api_contacts_update/', views.api_contacts_update, name='api_contacts_update'),
     re_path('api_contacts_user_details/(?P<user_id>[0-9]+)/',
             views.api_contacts_user_details, name='api_contacts_user_details'),
-    re_path('api_contacts_modify/(?P<user_id>[0-9]+)/',
-            views.api_contacts_modify, name='api_contacts_modify'),
-    re_path('api_contacts_delete/(?P<user_id>[0-9]+)/',
-            views.api_contacts_delete, name='api_contacts_delete'),
+    re_path('api_contacts_operation/(?P<user_id>[0-9]+)/',
+            views.api_contacts_operation, name='api_contacts_operation'),
 ]

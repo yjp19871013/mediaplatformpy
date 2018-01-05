@@ -1,5 +1,4 @@
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
@@ -11,7 +10,7 @@ from rest_framework.utils import json
 
 from mediaplatform.forms import ContactModifyForm, ContactDeleteForm
 from mediaplatform.models import Contacts, ContactsOperation
-from mediaplatform.serializers import ContactsSerializer, ContactsModifySerializer
+from mediaplatform.serializers import ContactsSerializer, ContactsOperationSerializer
 
 
 @never_cache
@@ -151,14 +150,8 @@ def api_contacts_update(request):
 
 
 @api_view(['GET'])
-def api_contacts_modify(request, user_id):
-    User.objects.filter(pk=user_id)
-    serializer = ContactsModifySerializer(data=request.data, many=True)
-    if serializer.is_valid():
-        return Response(serializer.data)
-
-
-@api_view(['GET'])
-def api_contacts_delete(request):
-    pass
+def api_contacts_operation(request, user_id):
+    operations = ContactsOperation.objects.filter(user_id=user_id)
+    serializer = ContactsOperationSerializer(operations, many=True)
+    return Response(serializer.data)
 

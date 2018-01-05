@@ -14,4 +14,5 @@ class ContactsOperation(models.Model):
     operation = models.CharField(max_length=10, null=False)
     new_phone_number = models.CharField(max_length=50, null=False)
 
-
+    def __str__(self):
+        return self.operation

@@ -32,7 +32,9 @@ class ContactsSerializer(serializers.ModelSerializer):
         fields = ('id', 'user_id', 'name', 'phone_number',)
 
 
-class ContactsModifySerializer(serializers.ModelSerializer):
+class ContactsOperationSerializer(serializers.ModelSerializer):
+    contacts = ContactsSerializer(read_only=True)
+
     class Meta:
         model = ContactsOperation
-        fields = ('id', 'user_id', 'operation', 'name', 'phone_number', 'new_phone_number',)
+        fields = ('id', 'user_id', 'operation', 'new_phone_number', 'contacts',)
