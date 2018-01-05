@@ -3,11 +3,12 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views.decorators.cache import never_cache
-from django.views.decorators.http import require_GET
+from django.views.decorators.http import require_GET, require_POST
 from rest_framework.decorators import api_view
 from rest_framework.utils import json
 
-from mediaplatform.models import Contacts
+from mediaplatform.forms import ContactStatusForm
+from mediaplatform.models import Contacts, ContactsStatus
 from mediaplatform.serializers import ContactsSerializer
 
 
@@ -51,6 +52,41 @@ def contacts(request):
 def user_info(request):
     return render(request,
                   'user_info.html')
+
+
+@never_cache
+@login_required(login_url='/mediaplatform_login/do_login')
+@require_POST
+def modify_phone_number(request):
+
+    user_id = request.user.id
+    form = ContactStatusForm(request.POST, user_id=user_id)
+    if form.is_valid():
+        name = form.cleaned_data['name']
+        contacts = Contacts.objects.filter(user_id=user_id, name=name)
+
+        old_phone_number = form.cleaned_data['old_phone_number']
+        new_phone_number = form.cleaned_data['new_phone_number']
+        status = ContactsStatus.objects.filter(contacts_id=contacts[0].id, old_phone_number=old_phone_number)
+        if status.count() > 1:
+            ret_dict = {'result': 'fail', 'error': '通信录状态异常，尝试刷新页面'}
+            return HttpResponse(json.dumps(ret_dict), content_type="application/json")
+
+        if status.count() == 0:
+            new_status = ContactsStatus(contacts=contacts[0],
+                                        old_phone_number=old_phone_number,
+                                        new_phone_number=new_phone_number)
+            new_status.save()
+        elif status.count() == 1:
+            update_status = status[0]
+            update_status.new_phone_number = new_phone_number
+            update_status.save()
+
+        ret_dict = {'result': 'success', 'error': ''}
+        return HttpResponse(json.dumps(ret_dict), content_type="application/json")
+    else:
+        ret_dict = {'result': 'fail', 'error': form.errors['new_phone_number']}
+        return HttpResponse(json.dumps(ret_dict), content_type="application/json")
 
 
 @api_view(['GET'])

@@ -7,5 +7,8 @@ class Contacts(models.Model):
     name = models.CharField(max_length=100, null=False)
     phone_number = models.CharField(max_length=50, null=False)
 
-    def __str__(self):
-        return 'user:' + self.user.username + ' name:' + self.name + ' phone_number:' + self.phone_number
+
+class ContactsStatus(models.Model):
+    contacts = models.ForeignKey(Contacts, on_delete=models.CASCADE)
+    old_phone_number = models.CharField(max_length=50, null=False)
+    new_phone_number = models.CharField(max_length=50, null=False)

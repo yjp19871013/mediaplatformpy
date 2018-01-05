@@ -22,7 +22,7 @@
             <li>
                 <div class="collapsible-header">
                     <i class="material-icons">list</i>
-                    {{ name }}
+                    <span class="name">{{ name }}</span>
                     <span class="badge">{{ phone_numbers|length }}</span>
                 </div>
                 <div class="collapsible-body">
@@ -33,9 +33,9 @@
                                 {% for phone_number in phone_numbers %}
                                 <li>
                                     <div class="row">
-                                        <div class="col l6 s6">{{ phone_number }}</div>
+                                        <div class="col l6 s6 phone_number">{{ phone_number }}</div>
                                         <div class="col l6 s6 right-align">
-                                            <a class="modal-trigger" href="#modify_phone_number_dialog">修改</a>
+                                            <a class="modal-trigger" href="javascript:void(0)" onclick="onModifyClicked()">修改</a>
                                             <a href="#">删除</a>
                                         </div>
                                     </div>
@@ -57,12 +57,22 @@
     <!-- Modal Structure -->
     <div id="modify_phone_number_dialog" class="modal">
         <div class="modal-content">
-            <h4>修改号码</h4>
+            <h4 id="modal_title">号码修改</h4>
             <input type="text" id="new_phone_number" placeholder="请输入新的号码"/>
         </div>
         <div class="modal-footer">
             <button class="modal-action waves-effect waves-light btn" onclick="onModifyPhoneNumber()">确定</button>
             <button class="modal-action modal-close waves-effect waves-green btn">取消</button>
+        </div>
+    </div>
+
+    <div id="alert_dialog" class="modal">
+        <div class="modal-content">
+            <h4 id="alert_title"></h4>
+            <p id="alert_message"></p>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-action modal-close waves-effect waves-green btn">关闭</button>
         </div>
     </div>
 </main>
@@ -73,6 +83,49 @@
         $('.modal').modal();
     });
 
+    function onModifyClicked() {
+        $('#modify_phone_number_dialog').modal('open');
+
+        var name = $('div.active > span.name').text();
+        $('#modal_title').text(name);
+
+        var phoneNumber = $('li.active div.phone_number').text();
+        $('#new_phone_number').val(phoneNumber);
+    }
+
     function onModifyPhoneNumber() {
+        var needModify = $('li.active div.phone_number');
+
+        var name = $('#modal_title').text();
+        var oldPhoneNumber = $('li.active div.phone_number').text();
+        var newPhoneNumber = $('#new_phone_number').val();
+        if (oldPhoneNumber == newPhoneNumber) {
+            $('#modify_phone_number_dialog').modal('close');
+            showAlertDialog('修改失败', '新旧号码一样，无需修改');
+            return;
+        }
+
+        $.post('{% url 'mediaplatform:modify_phone_number' %}',
+               {csrfmiddlewaretoken: '{{ csrf_token }}',
+                'name': name,
+                'old_phone_number': oldPhoneNumber,
+                'new_phone_number': newPhoneNumber},
+               function success(data, textStatus, jqXHR) {
+                    if (data.result == 'success') {
+                        showAlertDialog('修改成功', '待手机端自动同步后，刷新页面可看到修改');
+                    } else {
+                        showAlertDialog('修改失败', data.error);
+                    }
+               }).fail(function() {
+                    showAlertDialog('修改失败', '与服务器通信异常');
+               }).done(function() {
+                    $('#modify_phone_number_dialog').modal('close');
+               });
+    }
+
+    function showAlertDialog(title, message) {
+        $('#alert_title').text(title);
+        $('#alert_message').text(message);
+        $('#alert_dialog').modal('open');
     }
 {% endblock %}
