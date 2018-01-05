@@ -37,7 +37,8 @@
                                         <div class="col l6 s6 right-align">
                                             <a class="modal-trigger" href="javascript:void(0)" onclick="onModifyClicked(this)"
                                                data-phone_number="{{ phone_number }}">修改</a>
-                                            <a href="#">删除</a>
+                                            <a class="modal-trigger" href="javascript:void(0)" onclick="onDeleteClicked(this)"
+                                               data-phone_number="{{ phone_number }}">删除</a>
                                         </div>
                                     </div>
                                 </li>
@@ -58,13 +59,26 @@
     <!-- Modal Structure -->
     <div id="modify_phone_number_dialog" class="modal">
         <div class="modal-content">
-            <h4 id="modal_title">号码修改</h4>
-            <input type="hidden" id="name">
-            <input type="hidden" id="old_phone_number">
-            <input type="text" id="new_phone_number" placeholder="请输入新的号码"/>
+            <h4 id="modify_modal_title">号码修改</h4>
+            <input type="hidden" id="modify_name" name="name" />
+            <input type="hidden" id="modify_old_phone_number" name="old_phone_number" />
+            <input type="text" id="modify_new_phone_number" name="new_phone_number" placeholder="请输入新的号码"/>
         </div>
         <div class="modal-footer">
             <button class="modal-action waves-effect waves-light btn" onclick="onModifyPhoneNumber()">确定</button>
+            <button class="modal-action modal-close waves-effect waves-green btn">取消</button>
+        </div>
+    </div>
+
+    <div id="delete_phone_number_dialog" class="modal">
+        <div class="modal-content">
+            <h4 id="delete_modal_title">号码删除</h4>
+            <p id="delete_dialog_message">确认删除号码：</p>
+            <input type="hidden" id="delete_name" />
+            <input type="hidden" id="delete_phone_number" />
+        </div>
+        <div class="modal-footer">
+            <button class="modal-action waves-effect waves-light btn" onclick="onDeletePhoneNumber()">确定</button>
             <button class="modal-action modal-close waves-effect waves-green btn">取消</button>
         </div>
     </div>
@@ -90,20 +104,32 @@
         $('#modify_phone_number_dialog').modal('open');
 
         var name = $('div.active > span.name').text();
-        $('#modal_title').text(name);
-        $('#name').val(name)
+        $('#modify_modal_title').text(name);
+        $('#modify_name').val(name)
 
         var phoneNumber = $(obj).data('phone_number')
-        $('#old_phone_number').val(phoneNumber);
-        $('#new_phone_number').val(phoneNumber);
+        $('#modify_old_phone_number').val(phoneNumber);
+        $('#modify_new_phone_number').val(phoneNumber);
+    }
+
+    function onDeleteClicked(obj) {
+        $('#delete_phone_number_dialog').modal('open');
+
+        var name = $('div.active > span.name').text();
+        $('#delete_modal_title').text(name);
+        $('#delete_name').val(name)
+
+        var phoneNumber = $(obj).data('phone_number')
+        $('#delete_phone_number').val(phoneNumber);
+        $('#delete_dialog_message').text('确认删除号码：' + phoneNumber)
     }
 
     function onModifyPhoneNumber() {
-        var needModify = $('li.active div.phone_number');
+        $('#modify_phone_number_dialog').modal('close');
 
-        var name = $('#name').val();
-        var oldPhoneNumber = $('#old_phone_number').val();
-        var newPhoneNumber = $('#new_phone_number').val();
+        var name = $('#modify_name').val();
+        var oldPhoneNumber = $('#modify_old_phone_number').val();
+        var newPhoneNumber = $('#modify_new_phone_number').val();
         if (oldPhoneNumber == newPhoneNumber) {
             $('#modify_phone_number_dialog').modal('close');
             showAlertDialog('修改失败', '新旧号码一样，无需修改');
@@ -123,8 +149,26 @@
                     }
                }).fail(function() {
                     showAlertDialog('修改失败', '与服务器通信异常');
-               }).done(function() {
-                    $('#modify_phone_number_dialog').modal('close');
+               })
+    }
+
+    function onDeletePhoneNumber() {
+         $('#delete_phone_number_dialog').modal('close');
+
+        var name = $('#delete_name').val();
+        var phoneNumber = $('#delete_phone_number').val()
+        $.post('{% url 'mediaplatform:delete_phone_number' %}',
+               {csrfmiddlewaretoken: '{{ csrf_token }}',
+                'name': name,
+                'phone_number': phoneNumber},
+               function success(data, textStatus, jqXHR) {
+                    if (data.result == 'success') {
+                        showAlertDialog('删除成功', '待手机端同步后，刷新页面可看到修改');
+                    } else {
+                        showAlertDialog('删除失败', data.error);
+                    }
+               }).fail(function() {
+                    showAlertDialog('删除失败', '与服务器通信异常');
                });
     }
 
