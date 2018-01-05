@@ -5,7 +5,6 @@ from django.urls import reverse
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_GET, require_POST
 from rest_framework.decorators import api_view
-from rest_framework.response import Response
 from rest_framework.utils import json
 
 from mediaplatform.forms import ContactModifyForm, ContactDeleteForm
@@ -153,5 +152,10 @@ def api_contacts_update(request):
 def api_contacts_operation(request, user_id):
     operations = ContactsOperation.objects.filter(user_id=user_id)
     serializer = ContactsOperationSerializer(operations, many=True)
-    return Response(serializer.data)
+    if serializer.is_valid():
+        ret_dict = {'data': serializer.data, 'error': serializer.errors}
+        return HttpResponse(json.dumps(ret_dict), content_type="application/json")
+    else:
+        ret_dict = {'data': [], 'error': serializer.errors}
+        return HttpResponse(json.dumps(ret_dict), content_type="application/json")
 
