@@ -33,9 +33,10 @@
                                 {% for phone_number in phone_numbers %}
                                 <li>
                                     <div class="row">
-                                        <div class="col l6 s6 phone_number">{{ phone_number }}</div>
+                                        <div class="col l6 s6">{{ phone_number }}</div>
                                         <div class="col l6 s6 right-align">
-                                            <a class="modal-trigger" href="javascript:void(0)" onclick="onModifyClicked()">修改</a>
+                                            <a class="modal-trigger" href="javascript:void(0)" onclick="onModifyClicked(this)"
+                                               data-phone_number="{{ phone_number }}">修改</a>
                                             <a href="#">删除</a>
                                         </div>
                                     </div>
@@ -58,6 +59,8 @@
     <div id="modify_phone_number_dialog" class="modal">
         <div class="modal-content">
             <h4 id="modal_title">号码修改</h4>
+            <input type="hidden" id="name">
+            <input type="hidden" id="old_phone_number">
             <input type="text" id="new_phone_number" placeholder="请输入新的号码"/>
         </div>
         <div class="modal-footer">
@@ -83,21 +86,23 @@
         $('.modal').modal();
     });
 
-    function onModifyClicked() {
+    function onModifyClicked(obj) {
         $('#modify_phone_number_dialog').modal('open');
 
         var name = $('div.active > span.name').text();
         $('#modal_title').text(name);
+        $('#name').val(name)
 
-        var phoneNumber = $('li.active div.phone_number').text();
+        var phoneNumber = $(obj).data('phone_number')
+        $('#old_phone_number').val(phoneNumber);
         $('#new_phone_number').val(phoneNumber);
     }
 
     function onModifyPhoneNumber() {
         var needModify = $('li.active div.phone_number');
 
-        var name = $('#modal_title').text();
-        var oldPhoneNumber = $('li.active div.phone_number').text();
+        var name = $('#name').val();
+        var oldPhoneNumber = $('#old_phone_number').val();
         var newPhoneNumber = $('#new_phone_number').val();
         if (oldPhoneNumber == newPhoneNumber) {
             $('#modify_phone_number_dialog').modal('close');
@@ -112,7 +117,7 @@
                 'new_phone_number': newPhoneNumber},
                function success(data, textStatus, jqXHR) {
                     if (data.result == 'success') {
-                        showAlertDialog('修改成功', '待手机端自动同步后，刷新页面可看到修改');
+                        showAlertDialog('修改成功', '待手机端同步后，刷新页面可看到修改');
                     } else {
                         showAlertDialog('修改失败', data.error);
                     }

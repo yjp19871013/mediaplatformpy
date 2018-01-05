@@ -8,7 +8,7 @@ from rest_framework.decorators import api_view
 from rest_framework.utils import json
 
 from mediaplatform.forms import ContactStatusForm
-from mediaplatform.models import Contacts, ContactsStatus
+from mediaplatform.models import Contacts, ContactsModify
 from mediaplatform.serializers import ContactsSerializer
 
 
@@ -23,12 +23,13 @@ def home(request):
 @login_required(login_url='/mediaplatform_login/do_login')
 @require_GET
 def contacts(request):
+    user_id = request.user.id
     search_name = request.GET.get('search_name', '')
 
     if len(search_name) == 0:
-        contacts_objects = Contacts.objects.all()
+        contacts_objects = Contacts.objects.filter(user_id=user_id)
     else:
-        contacts_objects = Contacts.objects.filter(name=search_name)
+        contacts_objects = Contacts.objects.filter(user_id=user_id, name=search_name)
 
     show_contacts = {}
     for contact in contacts_objects:
@@ -63,19 +64,17 @@ def modify_phone_number(request):
     form = ContactStatusForm(request.POST, user_id=user_id)
     if form.is_valid():
         name = form.cleaned_data['name']
-        contacts = Contacts.objects.filter(user_id=user_id, name=name)
-
         old_phone_number = form.cleaned_data['old_phone_number']
+        contacts = Contacts.objects.filter(user_id=user_id, name=name, phone_number=old_phone_number)
+
         new_phone_number = form.cleaned_data['new_phone_number']
-        status = ContactsStatus.objects.filter(contacts_id=contacts[0].id, old_phone_number=old_phone_number)
+        status = ContactsModify.objects.filter(contacts_id=contacts[0].id)
         if status.count() > 1:
             ret_dict = {'result': 'fail', 'error': '通信录状态异常，尝试刷新页面'}
             return HttpResponse(json.dumps(ret_dict), content_type="application/json")
 
         if status.count() == 0:
-            new_status = ContactsStatus(contacts=contacts[0],
-                                        old_phone_number=old_phone_number,
-                                        new_phone_number=new_phone_number)
+            new_status = ContactsModify(contacts=contacts[0], new_phone_number=new_phone_number)
             new_status.save()
         elif status.count() == 1:
             update_status = status[0]
