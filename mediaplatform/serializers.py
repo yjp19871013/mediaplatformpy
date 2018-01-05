@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from mediaplatform.models import Contacts
+from mediaplatform.models import Contacts, ContactsOperation
 
 
 class ContactsSerializer(serializers.ModelSerializer):
@@ -30,3 +30,9 @@ class ContactsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contacts
         fields = ('id', 'user_id', 'name', 'phone_number',)
+
+
+class ContactsModifySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ContactsOperation
+        fields = ('id', 'user_id', 'operation', 'name', 'phone_number', 'new_phone_number',)

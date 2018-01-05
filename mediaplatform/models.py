@@ -8,11 +8,10 @@ class Contacts(models.Model):
     phone_number = models.CharField(max_length=50, null=False)
 
 
-class ContactsModify(models.Model):
+class ContactsOperation(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     contacts = models.ForeignKey(Contacts, on_delete=models.CASCADE)
+    operation = models.CharField(max_length=10, null=False)
     new_phone_number = models.CharField(max_length=50, null=False)
 
-
-class ContactsDelete(models.Model):
-    contacts = models.ForeignKey(Contacts, on_delete=models.CASCADE)
 

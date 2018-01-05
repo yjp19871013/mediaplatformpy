@@ -1,15 +1,17 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_GET, require_POST
 from rest_framework.decorators import api_view
+from rest_framework.response import Response
 from rest_framework.utils import json
 
 from mediaplatform.forms import ContactModifyForm, ContactDeleteForm
-from mediaplatform.models import Contacts, ContactsModify, ContactsDelete
-from mediaplatform.serializers import ContactsSerializer
+from mediaplatform.models import Contacts, ContactsOperation
+from mediaplatform.serializers import ContactsSerializer, ContactsModifySerializer
 
 
 @never_cache
@@ -67,15 +69,19 @@ def modify_phone_number(request):
         contacts_arr = Contacts.objects.filter(user_id=user_id, name=name, phone_number=old_phone_number)
 
         new_phone_number = form.cleaned_data['new_phone_number']
-        modify = ContactsModify.objects.filter(contacts_id=contacts_arr[0].id)
-        if modify.count() > 1:
+        operation = ContactsOperation.objects.filter(contacts_id=contacts_arr[0].id)
+        if operation.count() > 1:
             ret_dict = {'result': 'fail', 'error': '通信录状态异常，尝试刷新页面'}
             return HttpResponse(json.dumps(ret_dict), content_type="application/json")
-        elif modify.count() == 0:
-            new_modify = ContactsModify(contacts=contacts_arr[0], new_phone_number=new_phone_number)
+        elif operation.count() == 0:
+            new_modify = ContactsOperation(contacts=contacts_arr[0],
+                                           operation='modify',
+                                           new_phone_number=new_phone_number,
+                                           user=request.user)
             new_modify.save()
-        elif modify.count() == 1:
-            update_modify = modify[0]
+        elif operation.count() == 1:
+            update_modify = operation[0]
+            update_modify.operation = 'modify'
             update_modify.new_phone_number = new_phone_number
             update_modify.save()
 
@@ -96,13 +102,21 @@ def delete_phone_number(request):
         name = form.cleaned_data['name']
         phone_number = form.cleaned_data['phone_number']
         contacts_arr = Contacts.objects.filter(user_id=user_id, name=name, phone_number=phone_number)
-        delete = ContactsDelete.objects.filter(contacts=contacts_arr[0])
-        if delete.count() > 1:
+        operation = ContactsOperation.objects.filter(contacts=contacts_arr[0])
+        if operation.count() > 1:
             ret_dict = {'result': 'fail', 'error': '通信录状态异常，尝试刷新页面'}
             return HttpResponse(json.dumps(ret_dict), content_type="application/json")
-        elif delete.count() == 0:
-            new_delete = ContactsDelete(contacts=contacts_arr[0])
+        elif operation.count() == 0:
+            new_delete = ContactsOperation(contacts=contacts_arr[0],
+                                           operation='delete',
+                                           new_phone_number='',
+                                           user=request.user)
             new_delete.save()
+        elif operation.count() == 1:
+            update_delete = operation[0]
+            update_delete.operation = 'delete'
+            update_delete.new_phone_number = ''
+            update_delete.save()
 
         ret_dict = {'result': 'success', 'error': ''}
         return HttpResponse(json.dumps(ret_dict), content_type="application/json")
@@ -134,4 +148,17 @@ def api_contacts_update(request):
     else:
         ret_dict = {'error': serializer.errors}
         return HttpResponse(json.dumps(ret_dict), content_type="application/json")
+
+
+@api_view(['GET'])
+def api_contacts_modify(request, user_id):
+    User.objects.filter(pk=user_id)
+    serializer = ContactsModifySerializer(data=request.data, many=True)
+    if serializer.is_valid():
+        return Response(serializer.data)
+
+
+@api_view(['GET'])
+def api_contacts_delete(request):
+    pass
 
