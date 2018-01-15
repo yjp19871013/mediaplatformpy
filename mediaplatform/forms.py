@@ -56,3 +56,12 @@ class AddPhoneNumberForm(forms.Form):
     def __init__(self, data, user_id):
         super(AddPhoneNumberForm, self).__init__(data)
         self.user_id = user_id
+
+    def clean_phone_number(self):
+        name = self.cleaned_data['name']
+        phone_number = self.cleaned_data['phone_number']
+        contacts = Contacts.objects.filter(user_id=self.user_id, name=name)
+        if contacts.count() >= 15:
+            raise forms.ValidationError('通信录最多保存15个号码')
+
+        return phone_number

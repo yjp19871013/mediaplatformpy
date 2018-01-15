@@ -133,21 +133,16 @@ def add_phone_number(request):
         name = form.cleaned_data['name']
         phone_number = form.cleaned_data['phone_number']
         contacts_arr = Contacts.objects.filter(user_id=user_id, name=name)
-        operation = ContactsOperation.objects.filter(contacts=contacts_arr[0])
-        if operation.count() > 1:
-            ret_dict = {'result': 'fail', 'error': '通信录状态异常，尝试刷新页面'}
+        operation = ContactsOperation.objects.filter(contacts=contacts_arr[0], new_phone_number=phone_number)
+        if operation.count() > 0:
+            ret_dict = {'result': 'success', 'error': ''}
             return HttpResponse(json.dumps(ret_dict), content_type="application/json")
-        elif operation.count() == 0:
+        else:
             new_add = ContactsOperation(contacts=contacts_arr[0],
                                         operation='add_phone_number',
                                         new_phone_number=phone_number,
                                         user=request.user)
             new_add.save()
-        elif operation.count() == 1:
-            update_add = operation[0]
-            update_add.operation = 'add_phone_number'
-            update_add.new_phone_number = phone_number
-            update_add.save()
 
         ret_dict = {'result': 'success', 'error': ''}
         return HttpResponse(json.dumps(ret_dict), content_type="application/json")
