@@ -10,8 +10,14 @@
                        placeholder="请输入要查找的人名" value="{{ search_name }}">
                 <label class="label-icon" for="search"><i class="material-icons">search</i></label>
             </div>
-            <div class="col l3 s1"></div>
         </form>
+        <div class="col l3 s1"></div>
+    </div>
+
+    <div class="row">
+        <div class="col l5 s3"></div>
+        <button class="col l2 s6 waves-effect waves-light btn" onclick="onAddNewContactClicked()">添加通信录</button>
+        <div class="col l5 s3"></div>
     </div>
 
     <div class="row">
@@ -98,6 +104,20 @@
         </div>
     </div>
 
+    <div id="add_new_contact_dialog" class="modal">
+        <div class="modal-content">
+            <h4 id="add_new_contact_title">添加号码</h4>
+            <label for="contact_name">姓名：</label>
+            <input type="text" id="contact_name" placeholder="请输入姓名"/>
+            <label for="contact_phone_number">电话号码：</label>
+            <input type="text" id="contact_phone_number" placeholder="请输入添加的号码">
+        </div>
+        <div class="modal-footer">
+            <button class="modal-action waves-effect waves-light btn" onclick="onAddContact()">确定</button>
+            <button class="modal-action modal-close waves-effect waves-green btn">取消</button>
+        </div>
+    </div>
+
     <div id="alert_dialog" class="modal">
         <div class="modal-content">
             <h4 id="alert_title"></h4>
@@ -144,6 +164,10 @@
 
         var name = $('div.active > span.name').text();
         $('#new_phone_number_name').val(name)
+    }
+
+    function onAddNewContactClicked() {
+        $('#add_new_contact_dialog').modal('open');
     }
 
     function onModifyPhoneNumber() {
@@ -219,6 +243,38 @@
         var phoneNumber = $('#new_phone_number').val()
         if (phoneNumber == "") {
             $('#add_new_phone_number_dialog').modal('close');
+            showAlertDialog('添加失败', '手机号不能为空');
+            return;
+        }
+
+        $.post('{% url 'mediaplatform:add_phone_number' %}',
+               {csrfmiddlewaretoken: '{{ csrf_token }}',
+                'name': name,
+                'phone_number': phoneNumber},
+               function success(data, textStatus, jqXHR) {
+                    if (data.result == 'success') {
+                        showAlertDialog('添加成功', '待手机端同步后，刷新页面可看到修改');
+                    } else {
+                        showAlertDialog('添加失败', data.error);
+                    }
+               }).fail(function() {
+                    showAlertDialog('添加失败', '与服务器通信异常');
+               });
+    }
+
+    function onAddContact() {
+        $('#add_new_contact_dialog').modal('close');
+
+        var name = $('#contact_name').val();
+        if (name == "") {
+            $('#add_new_contact_dialog').modal('close');
+            showAlertDialog('添加失败', '通信录姓名为空');
+            return;
+        }
+
+        var phoneNumber = $('#contact_phone_number').val()
+        if (phoneNumber == "") {
+            $('#add_new_contact_dialog').modal('close');
             showAlertDialog('添加失败', '手机号不能为空');
             return;
         }

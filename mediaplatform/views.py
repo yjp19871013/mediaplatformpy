@@ -133,13 +133,18 @@ def add_phone_number(request):
         name = form.cleaned_data['name']
         phone_number = form.cleaned_data['phone_number']
         contacts_arr = Contacts.objects.filter(user_id=user_id, name=name)
-        operation = ContactsOperation.objects.filter(contacts=contacts_arr[0], new_phone_number=phone_number)
-        if operation.count() > 0:
-            ret_dict = {'result': 'success', 'error': ''}
-            return HttpResponse(json.dumps(ret_dict), content_type="application/json")
+
+        if contacts_arr.count() != 0:
+            operation = ContactsOperation.objects.filter(contacts=contacts_arr[0], new_phone_number=phone_number)
+            if operation.count() == 0:
+                new_add = ContactsOperation(contacts=contacts_arr[0],
+                                            operation='add_phone_number',
+                                            new_phone_number=phone_number,
+                                            user=request.user)
+                new_add.save()
         else:
-            new_add = ContactsOperation(contacts=contacts_arr[0],
-                                        operation='add_phone_number',
+            new_add = ContactsOperation(contacts=None,
+                                        operation='add_contact',
                                         new_phone_number=phone_number,
                                         user=request.user)
             new_add.save()
