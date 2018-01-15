@@ -7,7 +7,7 @@ from django.views.decorators.http import require_GET, require_POST
 from rest_framework.decorators import api_view
 from rest_framework.utils import json
 
-from mediaplatform.forms import ContactModifyForm, ContactDeleteForm
+from mediaplatform.forms import ContactModifyForm, ContactDeleteForm, AddPhoneNumberForm
 from mediaplatform.models import Contacts, ContactsOperation
 from mediaplatform.serializers import ContactsSerializer, ContactsOperationSerializer
 
@@ -119,7 +119,40 @@ def delete_phone_number(request):
         ret_dict = {'result': 'success', 'error': ''}
         return HttpResponse(json.dumps(ret_dict), content_type="application/json")
     else:
-        ret_dict = {'result': 'fail', 'error': form.errors['new_phone_number']}
+        ret_dict = {'result': 'fail', 'error': form.errors['phone_number']}
+        return HttpResponse(json.dumps(ret_dict), content_type="application/json")
+
+
+@never_cache
+@login_required(login_url='/mediaplatform_login/do_login')
+@require_POST
+def add_phone_number(request):
+    user_id = request.user.id
+    form = AddPhoneNumberForm(request.POST, user_id)
+    if form.is_valid():
+        name = form.cleaned_data['name']
+        phone_number = form.cleaned_data['phone_number']
+        contacts_arr = Contacts.objects.filter(user_id=user_id, name=name)
+        operation = ContactsOperation.objects.filter(contacts=contacts_arr[0])
+        if operation.count() > 1:
+            ret_dict = {'result': 'fail', 'error': '通信录状态异常，尝试刷新页面'}
+            return HttpResponse(json.dumps(ret_dict), content_type="application/json")
+        elif operation.count() == 0:
+            new_add = ContactsOperation(contacts=contacts_arr[0],
+                                        operation='add_phone_number',
+                                        new_phone_number=phone_number,
+                                        user=request.user)
+            new_add.save()
+        elif operation.count() == 1:
+            update_add = operation[0]
+            update_add.operation = 'add_phone_number'
+            update_add.new_phone_number = phone_number
+            update_add.save()
+
+        ret_dict = {'result': 'success', 'error': ''}
+        return HttpResponse(json.dumps(ret_dict), content_type="application/json")
+    else:
+        ret_dict = {'result': 'fail', 'error': form.errors['phone_number']}
         return HttpResponse(json.dumps(ret_dict), content_type="application/json")
 
 

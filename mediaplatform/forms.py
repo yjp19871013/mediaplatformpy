@@ -47,3 +47,12 @@ class ContactDeleteForm(forms.Form):
             raise forms.ValidationError('该姓名的通讯录信息不唯一')
 
         return phone_number
+
+
+class AddPhoneNumberForm(forms.Form):
+    name = CharField(required=True, error_messages={'required': '通讯录姓名不能为空'})
+    phone_number = CharField(required=True, error_messages={'required': '通讯录号码不能为空'})
+
+    def __init__(self, data, user_id):
+        super(AddPhoneNumberForm, self).__init__(data)
+        self.user_id = user_id
