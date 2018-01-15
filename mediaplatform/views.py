@@ -146,6 +146,7 @@ def add_phone_number(request):
             new_add = ContactsOperation(contacts=None,
                                         operation='add_contact',
                                         new_phone_number=phone_number,
+                                        new_name=name,
                                         user=request.user)
             new_add.save()
 

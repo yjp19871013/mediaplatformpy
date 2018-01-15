@@ -37,4 +37,4 @@ class ContactsOperationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ContactsOperation
-        fields = ('id', 'user_id', 'operation', 'new_phone_number', 'contacts',)
+        fields = ('id', 'user_id', 'operation', 'new_phone_number', 'new_name', 'contacts',)
