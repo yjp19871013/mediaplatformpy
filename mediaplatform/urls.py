@@ -15,3 +15,4 @@ urlpatterns = [
     re_path('api_contacts_operation/(?P<user_id>[0-9]+)/',
             views.api_contacts_operation, name='api_contacts_operation'),
 ]
+
